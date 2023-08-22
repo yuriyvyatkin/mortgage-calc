@@ -1,0 +1,31 @@
+html {
+  font-size: 16px;
+
+  /* цвета */
+  --accent-primary: #fbe54d;
+  --base-inputs: #2a2b31;
+  --base-secondary: #242529;
+  --base-stroke: #333535;
+  --text-disabled: #848484;
+  --text-primary: #fff;
+  --text-secondary: #d0d0d0;
+  --accent-yellow-disabled: #2d2d2d;
+  --black: #161616;
+  --white: #fff;
+  --dark-gray: #2d2d2d;
+  --gray: #848484;
+  --orange: #e76143;
+  --charcoal: #242529;
+  --slate-gray: #3f444d;
+  --steel-gray: #41434e;
+
+  /* размеры */
+  --10px: 0.625rem;
+  --12px: 0.75rem;
+  --14px: 0.875rem;
+  --16px: 1rem;
+  --18px: 1.125rem;
+  --20px: 1.25rem;
+  --24px: 1.5rem;
+  --48px: 3rem;
+}
