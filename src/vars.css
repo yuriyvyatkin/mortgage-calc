@@ -1,6 +1,4 @@
 html {
-  font-size: 16px;
-
   /* цвета */
   --accent-primary: #fbe54d;
   --base-inputs: #2a2b31;
@@ -27,5 +25,6 @@ html {
   --18px: 1.125rem;
   --20px: 1.25rem;
   --24px: 1.5rem;
+  --31px: 1.9375rem;
   --48px: 3rem;
 }

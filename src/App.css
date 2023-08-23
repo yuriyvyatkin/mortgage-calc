@@ -1,6 +1,7 @@
 .App {
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
 
   min-height: 100vh;
 
@@ -48,6 +49,8 @@
 }
 
 .control_default {
+  font-size: var(--16px);
+
   color: var(--text-disabled);
 }
 

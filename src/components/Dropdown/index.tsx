@@ -12,8 +12,7 @@ interface DropdownProps {
   selectedValue: string;
   withSearchInput?: boolean;
   errorText?: string;
-  onSelect: (valueKey: string, value: string) => void;
-  valueKey: string;
+  onSelect: (value: string) => void;
 }
 
 const Dropdown = ({
@@ -22,8 +21,7 @@ const Dropdown = ({
   selectedValue,
   withSearchInput = false,
   errorText = '',
-  onSelect,
-  valueKey,
+  onSelect: setValue,
 }: DropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useScroll(isOpen);
@@ -91,7 +89,7 @@ const Dropdown = ({
                 className="dropdown__item-wrapper"
                 key={value}
                 onClick={() => {
-                  onSelect(valueKey, value);
+                  setValue(value);
                   setIsOpen(false);
                 }}
               >
