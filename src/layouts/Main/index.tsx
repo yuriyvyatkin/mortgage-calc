@@ -47,6 +47,7 @@ const Main = ({ cities, periods, propertyTypes, ownership }: MainProps) => {
   const [isInitialPayChanged, setIsInitialPayChanged] = useState(false);
   const initialPayRef = useRef<number>(values.estateCost * 0.5);
   const continueButtonRef = useRef<HTMLButtonElement | null>(null);
+  const continueButtonDurty = useRef(false);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(max-width: 791px)');
@@ -177,9 +178,11 @@ const Main = ({ cities, periods, propertyTypes, ownership }: MainProps) => {
   };
 
   const handleContinue = () => {
-    if (continueButtonRef.current && continueButtonRef.current.classList.contains('continue-button_disabled')) {
-      return; // Не продолжать, если кнопка отключена
+    if (continueButtonDurty.current && continueButtonRef.current && continueButtonRef.current.classList.contains('continue-button_disabled')) {
+      return;
     }
+
+    continueButtonDurty.current = true;
 
     let isValid = true;
 
@@ -232,7 +235,8 @@ const Main = ({ cities, periods, propertyTypes, ownership }: MainProps) => {
 
   const toggleButtonDisabledClass = () => {
     if (continueButtonRef.current) {
-      let hasErrors = Object.values(errors).some(Boolean) || Object.values(values).some((item) => typeof item === 'string' && item.includes('Выберите'));
+      let hasErrors: boolean = Object.values(errors).some(Boolean) || Object.values(values).some((item) => typeof item === 'string' && item.includes('Выберите'));
+
       if (hasErrors) {
         continueButtonRef.current.classList.add('continue-button_disabled');
       } else {
@@ -362,8 +366,9 @@ const Main = ({ cities, periods, propertyTypes, ownership }: MainProps) => {
       <hr className="wide-custom-line" />
 
       <button
+        ref={continueButtonRef}
         onClick={handleContinue}
-        className="continue-button continue-button_disabled"
+        className="continue-button"
       >
         Продолжить
       </button>
