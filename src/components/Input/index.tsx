@@ -38,10 +38,7 @@ const Input = ({
   max,
   maxDescription,
 }: InputProps) => {
-  const handleInputChangeField = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawValue = e.target.value.replace(/[^0-9]/g, '');
-    const numberValue = Number(rawValue);
-
+  const validateAndSetInputValue = (numberValue: number) => {
     if (numberValue >= min && numberValue <= max) {
       setError('');
       setValue(numberValue);
@@ -54,9 +51,15 @@ const Input = ({
     }
   };
 
+  const handleInputChangeField = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawValue = e.target.value.replace(/[^0-9]/g, '');
+    const numberValue = Number(rawValue);
+    validateAndSetInputValue(numberValue);
+  };
+
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
-    setValue(value);
+    validateAndSetInputValue(value);
   };
 
   return (
@@ -86,17 +89,17 @@ const Input = ({
           required
         />
         <CurrencyIcon className="icon input-icon" />
-        {withSlider && (
-          <input
-            className="input-slider"
-            type="range"
-            min={min}
-            max={max}
-            value={value}
-            onChange={handleSliderChange}
-          />
-        )}
       </div>
+      {withSlider && (
+        <input
+          className="input-slider"
+          type="range"
+          min={label === 'Первоначальный взнос' ? 0 : min}
+          max={max}
+          value={value}
+          onChange={handleSliderChange}
+        />
+      )}
       {(minDescription || maxDescription) && (
         <div className="min-max-description">
           <span>{minDescription}</span>

@@ -2,8 +2,9 @@ import Dropdown from '@/components/Dropdown';
 import Input from '@/components/Input';
 import useDebounce from '@/hooks/useDebounce';
 import calculateMonthlyPayments from '@/utils/calculateMonthlyPayments';
-import calculateTimeframe from '@/utils/calculateTimeframe';
-import React, { useEffect, useState } from 'react';
+import calculateCurrentMonthlyPayment from '@/utils/calculateCurrentMonthlyPayment';
+import calculateCurrentTimeFrame from '@/utils/calculateCurrentTimeFrame';
+import React, { useEffect, useState, useRef } from 'react';
 import './main.css';
 
 interface MainProps {
@@ -14,13 +15,11 @@ interface MainProps {
 }
 
 const Main = ({ cities, periods, propertyTypes, ownership }: MainProps) => {
-  const initialEstateCost = 1000000;
-  const initialPay = initialEstateCost * 0.5;
   const [values, setValues] = useState({
-    estateCost: initialEstateCost,
+    estateCost: 1000000,
     city: 'Выберите город',
     period: 'Выберите период',
-    initialPay: initialPay,
+    initialPay: 0,
     propertyType: 'Выберите тип недвижимости',
     ownership: 'Выберите ответ',
     timeframe: {
@@ -45,6 +44,9 @@ const Main = ({ cities, periods, propertyTypes, ownership }: MainProps) => {
     monthlyPayment: '',
   });
   const [isMobileDevice, setIsMobileDevice] = useState(false);
+  const [isInitialPayChanged, setIsInitialPayChanged] = useState(false);
+  const initialPayRef = useRef<number>(values.estateCost * 0.5);
+  const continueButtonRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(max-width: 791px)');
@@ -62,41 +64,79 @@ const Main = ({ cities, periods, propertyTypes, ownership }: MainProps) => {
     };
   }, []);
 
+  useEffect(() => {
+    if (errors.estateCost || errors.initialPay || errors.timeframe) {
+      return;
+    }
+
+    const { estateCost, initialPay, timeframe } = values;
+
+    let newInitialPay = initialPay;
+    if (isInitialPayChanged) {
+      setIsInitialPayChanged(false);
+    } else if (initialPayRef.current !== initialPay) {
+      newInitialPay = estateCost * 0.5;
+    }
+
+    const newMonthlyPayment = calculateCurrentMonthlyPayment(
+      estateCost,
+      initialPay,
+      timeframe.current,
+    );
+
+    const { min, max } = calculateMonthlyPayments(
+      estateCost,
+      initialPay,
+      timeframe,
+    );
+
+    setValues({
+      ...values,
+      monthlyPayment: { current: newMonthlyPayment, min, max },
+      initialPay: newInitialPay,
+    });
+  }, [values.estateCost, values.initialPay, values.timeframe]);
+
   useDebounce(
     () => {
-      const { estateCost, initialPay, monthlyPayment } = values;
+      if (errors.monthlyPayment || errors.estateCost || errors.initialPay) {
+        return;
+      }
+
+      const { monthlyPayment, estateCost, initialPay } = values;
+
+      const newTimeFrameCurrent = calculateCurrentTimeFrame(
+        estateCost,
+        initialPay,
+        monthlyPayment.current,
+      );
 
       setValues({
         ...values,
-        timeframe: {
-          ...values.timeframe,
-          current: calculateTimeframe(
-            estateCost,
-            initialPay,
-            monthlyPayment.current,
-          ),
-        },
+        timeframe: { ...values.timeframe, current: newTimeFrameCurrent },
       });
     },
     500,
     [values.monthlyPayment.current],
   );
 
-  useEffect(() => {
-    const { estateCost, initialPay, timeframe } = values;
-
-    setValues({
-      ...values,
-      monthlyPayment: calculateMonthlyPayments(
-        estateCost,
-        initialPay,
-        timeframe,
-      ),
-    });
-  }, [values.estateCost, values.timeframe, values.initialPay]);
-
   const handleValueChange = (field: string, value: number) => {
-    if (field === 'timeframe') {
+    if (field === 'estateCost') {
+      const newInitialPay = value * 0.5;
+      setValues({
+        ...values,
+        estateCost: value,
+        initialPay: newInitialPay,
+        monthlyPayment: {
+          ...values.monthlyPayment,
+          current: calculateCurrentMonthlyPayment(
+            value,
+            newInitialPay,
+            values.timeframe.current,
+          ),
+        },
+      });
+    } else if (field === 'timeframe') {
       setValues({
         ...values,
         timeframe: { ...values.timeframe, current: value },
@@ -107,6 +147,11 @@ const Main = ({ cities, periods, propertyTypes, ownership }: MainProps) => {
         monthlyPayment: { ...values.monthlyPayment, current: value },
       });
     } else {
+      if (field === 'initialPay') {
+        setIsInitialPayChanged(true);
+        initialPayRef.current = value;
+      }
+
       setValues({ ...values, [field]: value });
     }
   };
@@ -132,6 +177,10 @@ const Main = ({ cities, periods, propertyTypes, ownership }: MainProps) => {
   };
 
   const handleContinue = () => {
+    if (continueButtonRef.current && continueButtonRef.current.classList.contains('continue-button_disabled')) {
+      return; // Не продолжать, если кнопка отключена
+    }
+
     let isValid = true;
 
     const errorKeys: { [key: string]: keyof typeof errors } = {
@@ -181,7 +230,20 @@ const Main = ({ cities, periods, propertyTypes, ownership }: MainProps) => {
     }
   };
 
-  const isDisabled = Object.values(errors).some(Boolean);
+  const toggleButtonDisabledClass = () => {
+    if (continueButtonRef.current) {
+      let hasErrors = Object.values(errors).some(Boolean) || Object.values(values).some((item) => typeof item === 'string' && item.includes('Выберите'));
+      if (hasErrors) {
+        continueButtonRef.current.classList.add('continue-button_disabled');
+      } else {
+        continueButtonRef.current.classList.remove('continue-button_disabled');
+      }
+    }
+  };
+
+  useEffect(() => {
+    toggleButtonDisabledClass();
+  }, [errors, values]);
 
   return (
     <main className="main">
@@ -301,8 +363,7 @@ const Main = ({ cities, periods, propertyTypes, ownership }: MainProps) => {
 
       <button
         onClick={handleContinue}
-        disabled={isDisabled}
-        className="continue-button"
+        className="continue-button continue-button_disabled"
       >
         Продолжить
       </button>

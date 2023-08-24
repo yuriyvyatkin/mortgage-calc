@@ -3,7 +3,7 @@ import CheckIcon from '@/assets/svg/check.svg';
 import MagnifierIcon from '@/assets/svg/magnifier.svg';
 import { Error } from "@/components/Error";
 import useScroll from '@/hooks/useScroll';
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './dropdown.css';
 
 interface DropdownProps {
@@ -26,6 +26,7 @@ const Dropdown = ({
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useScroll(isOpen);
   const [query, setQuery] = useState('');
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.trim();
@@ -37,8 +38,21 @@ const Dropdown = ({
     }
   };
 
+  const handleClickOutside = (event: MouseEvent) => {
+    if (containerRef.current && event.target instanceof Node && !containerRef.current.contains(event.target)) {
+      setIsOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
   return (
-    <div className="frame__item">
+    <div className="frame__item" ref={containerRef}>
       <label>{label}</label>
 
       <div
@@ -63,7 +77,7 @@ const Dropdown = ({
       </div>
 
       {isOpen && (
-        <div className="dropdown" ref={dropdownRef}>
+        <div className={`dropdown`} ref={dropdownRef}>
           {withSearchInput && (
             <div className="search-bar-wrapper" key="search">
               <MagnifierIcon className="search-bar-icon" />

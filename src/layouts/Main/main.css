@@ -7,12 +7,10 @@
   margin-top: 120px;
   margin-bottom: 32px;
   padding-inline: 20px;
-  z-index: 5;
 }
 
 .title {
   font-size: var(--48px);
-  font-family: 'Roboto', sans-serif;
 }
 
 .custom-line {
@@ -26,7 +24,6 @@
 .wide-custom-line {
   position: relative;
   left: -500px;
-  z-index: 2;
 
   width: calc(100% + 1000px);
   height: 1px;
@@ -36,8 +33,6 @@
 }
 
 .continue-button {
-  z-index: 3;
-
   width: 249px;
   margin-left: auto;
   padding: 12px 16px;
@@ -48,7 +43,7 @@
   background-color: var(--accent-primary);
 }
 
-.continue-button:disabled {
+.continue-button_disabled {
   color: var(--text-disabled);
   background-color: var(--dark-gray);
 }
