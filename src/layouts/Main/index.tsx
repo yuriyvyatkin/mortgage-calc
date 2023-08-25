@@ -1,14 +1,14 @@
+import CurrencyIcon from '@/assets/svg/currency.svg';
 import Dropdown from '@/components/Dropdown';
 import Input from '@/components/Input';
-import useDebounce from '@/hooks/useDebounce';
 import useMediaQuery from '@/hooks/useMediaQuery';
-import calculateMonthlyPayments from '@/utils/calculateMonthlyPayments';
 import calculateCurrentMonthlyPayment from '@/utils/calculateCurrentMonthlyPayment';
 import calculateCurrentTimeFrame from '@/utils/calculateCurrentTimeFrame';
-import CurrencyIcon from '@/assets/svg/currency.svg';
-import React, { useEffect, useState, useRef } from 'react';
+import calculateMonthlyPayments from '@/utils/calculateMonthlyPayments';
+import React, { useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 import './main.css';
+const formatter = new Intl.NumberFormat('en-EN');
 
 interface MainProps {
   footerRef: React.RefObject<HTMLDivElement>;
@@ -29,7 +29,7 @@ const Main = ({
     estateCost: 1000000,
     location: 'Выберите город',
     delay: 'Выберите период',
-    initialPay: 0,
+    initialPay: 500000,
     property: 'Выберите тип недвижимости',
     ownership: 'Выберите ответ',
     timeframe: {
@@ -53,9 +53,6 @@ const Main = ({
     timeframe: '',
     monthlyPayment: '',
   });
-  const [isInitialPayChanged, setIsInitialPayChanged] = useState(false);
-  // Реф для поля "Первоначальный взнос", чтобы избежать побочных эффектов, откатывающих значение к предпоследнему
-  const initialPayRef = useRef<number>(values.estateCost * 0.5);
   // Реф для кнопки "Продолжить"
   const contBtnRef = useRef<HTMLButtonElement | null>(null);
   // Реф, позволяющий выполнить один раз проверку всех полей после загрузки компонента и не активной кнопке "Продолжить"
@@ -65,20 +62,18 @@ const Main = ({
   // Состояние для хранения последнего валидного значения стоимости недвижимости, чтобы предотвратить побочные вычисления в случае ошибки
   const [validEstateCost, setValidEstateCost] = useState(values.estateCost);
 
-  // хуки useEffect и useDebounce, обновляющие соответствующие значения у зависимых полей при вводе новых значений в каком-либо поле ввода
+  // хуки useEffect, обновляющие соответствующие значения у зависимых полей при вводе новых значений в каком-либо поле ввода
   useEffect(() => {
-    if (errors.estateCost || errors.initialPay || errors.timeframe || errors.monthlyPayment) {
+    if (
+      errors.estateCost ||
+      errors.initialPay ||
+      errors.timeframe ||
+      errors.monthlyPayment
+    ) {
       return;
     }
 
     const { estateCost, initialPay, timeframe } = values;
-
-    let newInitialPay = initialPay;
-    if (isInitialPayChanged) {
-      setIsInitialPayChanged(false);
-    } else if (initialPayRef.current !== initialPay) {
-      newInitialPay = estateCost * 0.5;
-    }
 
     const { current, min, max } = calculateMonthlyPayments(
       estateCost,
@@ -88,15 +83,18 @@ const Main = ({
 
     setValues({
       ...values,
-      monthlyPayment: { current, min, max },
-      initialPay: newInitialPay,
+      monthlyPayment: { current, min, max }
     });
   }, [values.estateCost, values.initialPay, values.timeframe]);
 
-  // useDebounce используется для обеспечения корректности вычислений значений полей "Ежемесячный платёж" и "Срок"
-  useDebounce(
+  useEffect(
     () => {
-      if (errors.estateCost || errors.initialPay || errors.timeframe || errors.monthlyPayment) {
+      if (
+        errors.estateCost ||
+        errors.initialPay ||
+        errors.timeframe ||
+        errors.monthlyPayment
+      ) {
         return;
       }
 
@@ -110,10 +108,9 @@ const Main = ({
 
       setValues({
         ...values,
-        timeframe: { ...values.timeframe, current: newCurrentTimeFrame },
+        timeframe: { ...values.timeframe, current: newCurrentTimeFrame > 4 ? newCurrentTimeFrame : values.timeframe.min },
       });
     },
-    500,
     [values.monthlyPayment.current],
   );
 
@@ -122,7 +119,7 @@ const Main = ({
     if (field === 'estateCost') {
       let newInitialPay = values.initialPay;
 
-      if (value >= 100000 && value <= 10000000) {
+      if (value >= 0 && value <= 10000000) {
         setValidEstateCost(value);
         newInitialPay = value * 0.5;
         setErrors({
@@ -158,11 +155,6 @@ const Main = ({
         monthlyPayment: { ...values.monthlyPayment, current: value },
       });
     } else {
-      if (field === 'initialPay') {
-        setIsInitialPayChanged(true);
-        initialPayRef.current = value;
-      }
-
       setValues({ ...values, [field]: value });
     }
   };
@@ -275,11 +267,11 @@ const Main = ({
         <Input
           label="Стоимость недвижимости"
           value={values.estateCost}
-          min={100000}
+          min={0}
           max={10000000}
           onChange={(value: number) => handleValueChange('estateCost', value)}
           onError={(error: string) => handleError('estateCost', error)}
-          rangeErrorText="Стоимость недвижимости не может меньше 100,000 и превышать 10,000,000"
+          rangeErrorText="Стоимость недвижимости не может превышать 10,000,000"
           errorText={errors.estateCost}
           icon={CurrencyIcon}
         />
@@ -309,7 +301,7 @@ const Main = ({
           onError={(error: string) => handleError('initialPay', error)}
           rangeErrorText="Сумма первоначального взноса не может быть меньше 25% и больше 100% от стоимости недвижимости"
           errorText={errors.initialPay}
-          infoText="Сумма финансирования: 100,000 ₪\nПроцент финансирования: 25%"
+          infoText={`Сумма финансирования: ${formatter.format(values.initialPay)} ₪<br>Процент финансирования: ${Math.floor((values.initialPay / validEstateCost) * 100)} %`}
           tooltipText={
             !isMobileDevice
               ? 'Основная квартира: у заемщика нет квартиры ставка финансирования\nМаксимум до 75%\n\nАльтернативная квартира: Для заемщика квартира, которую он обязуется продать в течение двух лет ставка финансирования\nМаксимум до 70%\n\nВторая квартира или выше: у заемщика уже есть ставка финансирования квартиры\nМаксимум до 50%'
@@ -345,8 +337,8 @@ const Main = ({
           value={values.timeframe.current}
           withSlider={true}
           min={values.timeframe.min}
-          minDescription={`${values.timeframe.min} ₪`}
-          maxDescription={`${values.timeframe.max} ₪`}
+          minDescription={`${values.timeframe.min} года`}
+          maxDescription={`${values.timeframe.max} лет`}
           max={values.timeframe.max}
           onChange={(value: number) => handleValueChange('timeframe', value)}
           onError={(error: string) => handleError('timeframe', error)}

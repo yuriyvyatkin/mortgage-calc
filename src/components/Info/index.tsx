@@ -12,7 +12,7 @@ const Info = ({ text }: InfoProps) => {
     <div className="info">
       <Icon className="info-icon" />
       <span className="info__text">
-        <ContentWithBreaks content={text} separator='\n' />
+        <ContentWithBreaks content={text} separator='<br>' />
       </span>
     </div>
   );
