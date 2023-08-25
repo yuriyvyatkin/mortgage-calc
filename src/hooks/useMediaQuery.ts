@@ -1,3 +1,5 @@
+// хук возвращающий true или false при заданных размерах экрана
+// пример входной строки: (max-width: 873px)
 import { useState, useEffect } from 'react';
 
 const useMediaQuery = (query: string): boolean => {

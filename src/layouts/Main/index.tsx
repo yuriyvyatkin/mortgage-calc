@@ -53,6 +53,7 @@ const Main = ({ footerRef, location, delay, property, ownership }: MainProps) =>
   const contBtnIsDurtyRef = useRef(false);
   const isMobileDevice = useMediaQuery('(max-width: 873px)');
 
+  // хуки, реагирующие на изменения элементов управления
   useEffect(() => {
     if (errors.estateCost || errors.initialPay || errors.timeframe) {
       return;
@@ -103,6 +104,8 @@ const Main = ({ footerRef, location, delay, property, ownership }: MainProps) =>
     [values.monthlyPayment.current],
   );
 
+  // обработчики входных значений
+  // для инпутов
   const handleValueChange = (field: string, value: number) => {
     if (field === 'estateCost') {
       const newInitialPay = value * 0.5;
@@ -140,6 +143,7 @@ const Main = ({ footerRef, location, delay, property, ownership }: MainProps) =>
     }
   };
 
+  // для выпадающих списков
   const handleItemChange = (valueKey: string, value: string) => {
     setValues({ ...values, [valueKey]: value });
 
@@ -148,10 +152,12 @@ const Main = ({ footerRef, location, delay, property, ownership }: MainProps) =>
     }
   };
 
+  // общий обработчик ошибок
   const handleError = (field: string, error: string) => {
     setErrors({ ...errors, [field]: error });
   };
 
+  // обработчик для проверки всех полей перед записью в LocalStorage
   const handleContinue = () => {
     if (
       contBtnIsDurtyRef.current &&
@@ -196,6 +202,7 @@ const Main = ({ footerRef, location, delay, property, ownership }: MainProps) =>
     }
   };
 
+  // обработчик для переключения активного состояния кнопки "Продолжить"
   const toggleButtonDisabledClass = () => {
     if (contBtnRef.current) {
       let hasErrors: boolean =

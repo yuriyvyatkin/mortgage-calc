@@ -1,3 +1,5 @@
+// Заимствовано от сюда: https://courses.webdevsimplified.com/view/courses/react-hooks-simplified/1327246-custom-hooks
+// (по ссылке видео-описание)
 import { useCallback, useEffect, useRef } from 'react';
 
 type Callback = () => void;

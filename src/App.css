@@ -11,6 +11,7 @@
   background-color: var(--black);
 }
 
+/* Сетка для флексов */
 .frame {
   display: flex;
   flex-wrap: wrap;
@@ -24,6 +25,8 @@
 
   width: 325px;
 }
+
+/* Стили для элементов управления (инпуты, селекты) */
 
 .label {
   font-size: var(--16px);
@@ -79,6 +82,8 @@
 
   border-color: #e76143;
 }
+
+/* Подвал */
 
 .wide-line {
   width: 100%;

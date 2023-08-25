@@ -1,6 +1,7 @@
+// Хук, имитирующий скролл, путём перемещения псевдо-элемента внутри выпадающего списка
 import { useEffect, useRef } from 'react';
 
-const useScroll = (citiesDropdown: boolean) => {
+const useScroll = (dropdownIsOpen: boolean) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -40,7 +41,7 @@ const useScroll = (citiesDropdown: boolean) => {
       }
     };
 
-    if (element && citiesDropdown) {
+    if (element && dropdownIsOpen) {
       element.addEventListener('scroll', handleScroll);
       checkScrollability();
     }
@@ -50,7 +51,7 @@ const useScroll = (citiesDropdown: boolean) => {
         element.removeEventListener('scroll', handleScroll);
       }
     };
-  }, [citiesDropdown]);
+  }, [dropdownIsOpen]);
 
   return dropdownRef;
 };

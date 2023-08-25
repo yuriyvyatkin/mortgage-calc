@@ -24,6 +24,8 @@
   outline: none;
 }
 
+/* Выпадающий список и его элементы */
+
 .dropdown {
   position: relative;
   display: flex;

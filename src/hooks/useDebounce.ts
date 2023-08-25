@@ -1,3 +1,5 @@
+// Заимствовано от сюда: https://courses.webdevsimplified.com/view/courses/react-hooks-simplified/1327246-custom-hooks
+// (по ссылке видео-описание)
 import { useEffect, DependencyList } from "react";
 import useTimeout from "./useTimeout";
 
