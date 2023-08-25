@@ -48,12 +48,16 @@ const Main = ({ footerRef, location, delay, property, ownership }: MainProps) =>
     monthlyPayment: '',
   });
   const [isInitialPayChanged, setIsInitialPayChanged] = useState(false);
+  // Реф для поля "Первоначальный взнос", чтобы избежать побочных эффектов, откатывающих значение к предпоследнему
   const initialPayRef = useRef<number>(values.estateCost * 0.5);
+  // Реф для кнопки "Продолжить"
   const contBtnRef = useRef<HTMLButtonElement | null>(null);
+  // Реф, позволяющий выполнить один раз проверку всех полей после загрузки компонента и не активной кнопке "Продолжить"
   const contBtnIsDurtyRef = useRef(false);
+  // Хук, определяющий мобильные устройства, для выборочного рендеринга некоторых элементов на этих устройствах
   const isMobileDevice = useMediaQuery('(max-width: 873px)');
 
-  // хуки, реагирующие на изменения элементов управления
+  // хуки useEffect и useDebounce, обновляющие соответствующие значения у зависимых полей при вводе новых значений в каком-либо поле ввода
   useEffect(() => {
     if (errors.estateCost || errors.initialPay || errors.timeframe) {
       return;
@@ -81,6 +85,7 @@ const Main = ({ footerRef, location, delay, property, ownership }: MainProps) =>
     });
   }, [values.estateCost, values.initialPay, values.timeframe]);
 
+  // useDebounce используется для обеспечения корректности вычислений значений полей "Ежемесячный платёж" и "Срок"
   useDebounce(
     () => {
       if (errors.monthlyPayment || errors.estateCost || errors.initialPay) {
@@ -104,8 +109,7 @@ const Main = ({ footerRef, location, delay, property, ownership }: MainProps) =>
     [values.monthlyPayment.current],
   );
 
-  // обработчики входных значений
-  // для инпутов
+  // обработчик новых значений полей ввода
   const handleValueChange = (field: string, value: number) => {
     if (field === 'estateCost') {
       const newInitialPay = value * 0.5;
@@ -143,7 +147,7 @@ const Main = ({ footerRef, location, delay, property, ownership }: MainProps) =>
     }
   };
 
-  // для выпадающих списков
+  // обработчик новых значений выпадающих списков
   const handleItemChange = (valueKey: string, value: string) => {
     setValues({ ...values, [valueKey]: value });
 
@@ -152,7 +156,7 @@ const Main = ({ footerRef, location, delay, property, ownership }: MainProps) =>
     }
   };
 
-  // общий обработчик ошибок
+  // обработчик ошибок для всех полей
   const handleError = (field: string, error: string) => {
     setErrors({ ...errors, [field]: error });
   };
@@ -202,7 +206,7 @@ const Main = ({ footerRef, location, delay, property, ownership }: MainProps) =>
     }
   };
 
-  // обработчик для переключения активного состояния кнопки "Продолжить"
+  // обработчик для переключения состояния кнопки "Продолжить" на активное/не активное
   const toggleButtonDisabledClass = () => {
     if (contBtnRef.current) {
       let hasErrors: boolean =

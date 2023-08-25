@@ -1,15 +1,18 @@
+// Функция для расчета срока кредита в годах
 const calculateCurrentTimeFrame = (
-  estateCost: number,
-  initialPay: number,
-  monthlyPayment: number,
+  estateCost: number, // Общая стоимость недвижимости
+  initialPay: number, // Первоначальный взнос
+  monthlyPayment: number, // Ежемесячный платеж
 ) => {
-  const principal = estateCost - initialPay; // Основная сумма кредита
+  // Основная сумма кредита
+  const credit = estateCost - initialPay;
 
-  if (monthlyPayment <= 0 || principal <= 0) {
+  // Проверка на недопустимые значения
+  if (monthlyPayment <= 0 || credit <= 0) {
     return 0;
   }
 
-  const numberOfPayments = principal / monthlyPayment;
+  const numberOfPayments = credit / monthlyPayment;
 
   return Math.ceil(numberOfPayments / 12);
 };

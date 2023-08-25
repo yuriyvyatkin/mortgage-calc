@@ -16,16 +16,19 @@ interface DropdownProps {
 }
 
 const Dropdown = ({
-  label,
-  values,
+  label, // Подпись выпадающего списка
+  values, // Массив возможных значений
   selectedValue,
   withSearchInput = false,
   errorText = '',
   onSelect: setValue,
 }: DropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useScroll(isOpen);
+  // Хук для управления скроллингом, принимающий булево значение для его активации и высоту ползунка
+  const dropdownRef = useScroll(isOpen, 64);
+  // Состояние поискового запроса
   const [query, setQuery] = useState('');
+  // Реф для закрытия выпадающего списка при клике за его границами
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,6 +41,7 @@ const Dropdown = ({
     }
   };
 
+  // Обработчик клика вне компонента
   const handleClickOutside = (event: MouseEvent) => {
     if (
       containerRef.current &&
@@ -59,6 +63,7 @@ const Dropdown = ({
     <div className="frame__item" ref={containerRef}>
       <label className="label">{label}</label>
 
+      {/* Контейнер, содержащий текущее значение выпадающего списка */}
       <div
         className={`select-container control-container ${
           errorText ? 'control-container_error' : ''
@@ -87,6 +92,7 @@ const Dropdown = ({
         />
       </div>
 
+      {/* Выпадающий список */}
       {isOpen && (
         <div className="dropdown" ref={dropdownRef}>
           {withSearchInput && (

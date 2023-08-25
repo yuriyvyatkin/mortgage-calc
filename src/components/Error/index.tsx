@@ -5,8 +5,8 @@ interface ErrorProps {
   text: string;
 }
 
+// Компонент для отображения сообщения об ошибке
 const Error = ({ text } : ErrorProps) => {
-
   return (
     <div className="error">
       <Icon className="error-icon" />

@@ -1,7 +1,8 @@
-// Хук, имитирующий скролл, путём перемещения псевдо-элемента внутри выпадающего списка
+// Хук, имитирующий скроллинг, путём установки соответствующих стилей и перемещения псевдо-элемента внутри выпадающего списка
 import { useEffect, useRef } from 'react';
 
-const useScroll = (dropdownIsOpen: boolean) => {
+const useScroll = (dropdownIsOpen: boolean, sliderHeight: number) => {
+  // Ссылка на элемент выпадающего списка
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -10,18 +11,22 @@ const useScroll = (dropdownIsOpen: boolean) => {
     const handleScroll = () => {
       const element = dropdownRef.current;
       if (element) {
+        // Вычисление процента прокрутки
         const scrollPercentage =
           element.scrollTop / (element.scrollHeight - element.clientHeight);
-        let scrollbarPosition = scrollPercentage * (element.clientHeight - 64);
+        // Вычисление позиции ползунка
+        let scrollbarPosition = scrollPercentage * (element.clientHeight - sliderHeight);
 
         scrollbarPosition = Math.max(scrollbarPosition, 8);
 
-        if (scrollbarPosition >= element.clientHeight - 64) {
+        // Если ползунок больше не прокручивается, то опускаем его в положение примерно 6px от нижней границы выпадающего списка
+        // Для браузера Chrome положение ползунка отличается примерно на 8px
+        if (scrollbarPosition >= element.clientHeight - sliderHeight) {
           const isChrome =
             /Chrome/.test(navigator.userAgent) &&
             !/OPR/.test(navigator.userAgent);
 
-          scrollbarPosition = element.clientHeight - 32 - (isChrome ? 0 : 8);
+          scrollbarPosition = element.clientHeight - sliderHeight / 2 - (isChrome ? 0 : 8);
         }
 
         element.style.setProperty(
@@ -31,6 +36,7 @@ const useScroll = (dropdownIsOpen: boolean) => {
       }
     };
 
+    // Функция для проверки возможности прокрутки
     const checkScrollability = () => {
       if (element) {
         if (element.scrollHeight <= element.clientHeight) {
@@ -43,6 +49,7 @@ const useScroll = (dropdownIsOpen: boolean) => {
 
     if (element && dropdownIsOpen) {
       element.addEventListener('scroll', handleScroll);
+
       checkScrollability();
     }
 

@@ -65,7 +65,7 @@
 }
 
 /* Далее стили для input range */
-/* Заимствовано от сюда: https://codepen.io/ShadowShahriar/pen/zYPPYrQ */
+/* Ссылка на материал: https://codepen.io/ShadowShahriar/pen/zYPPYrQ */
 input[type='range'] {
   bottom: 17px;
 }
@@ -82,7 +82,7 @@ input[type='range'] {
 }
 
 /* Общие стили */
-/* Внимание! Цвет #fff0; менять нельзя. Он задаёт прозрачность. */
+/* цвет #fff0 - задаёт прозрачность */
 input[type='range'] {
   position: relative;
   overflow: hidden;

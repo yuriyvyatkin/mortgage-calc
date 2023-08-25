@@ -6,6 +6,7 @@ interface InfoProps {
   text: string;
 }
 
+// Компонент для отображения справочной информации
 const Info = ({ text }: InfoProps) => {
   return (
     <div className="info">

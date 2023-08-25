@@ -1,13 +1,19 @@
+// Функция для расчета ежемесячного платежа по кредиту
 const calculateCurrentMonthlyPayment = (
-  estateCost: number,
-  initialPay: number,
-  numberOfYears: number,
+  estateCost: number, // Общая стоимость недвижимости
+  initialPay: number, // Первоначальный взнос
+  numberOfYears: number, // Количество лет, на которые взят кредит
 ) => {
-  const loanAmount = estateCost - initialPay;
+  // Основная сумма кредита
+  const credit = estateCost - initialPay;
+
   const numberOfMonths = numberOfYears * 12;
+
+  // Расчет ежемесячного платежа, путём деления суммы кредита на количество месяцев
+  // и тернарный оператор для защиты от деления на 0
   const monthlyPayment = numberOfMonths
-    ? loanAmount / numberOfMonths
-    : loanAmount;
+    ? credit / numberOfMonths
+    : credit;
 
   return Math.ceil(monthlyPayment);
 };

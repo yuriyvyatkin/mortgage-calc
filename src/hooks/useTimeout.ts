@@ -1,11 +1,14 @@
-// Заимствовано от сюда: https://courses.webdevsimplified.com/view/courses/react-hooks-simplified/1327246-custom-hooks
-// (по ссылке видео-описание)
 import { useCallback, useEffect, useRef } from 'react';
 
 type Callback = () => void;
 
+// Хук useTimeout предоставляет удобный способ управления JavaScript-таймаутом.
+// Это может быть полезно для задач, таких как отсрочка выполнения функции.
 const useTimeout = (callback: Callback, delay: number) => {
+  // callbackRef используется для хранения ссылки на функцию обратного вызова, чтобы он не изменялся при каждом рендере
   const callbackRef = useRef<Callback>(callback);
+
+  // timeoutRef используется для хранения ссылки на текущий таймер, чтобы его можно было отменить
   const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {

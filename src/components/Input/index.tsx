@@ -3,6 +3,7 @@ import TooltipIcon from '@/assets/svg/info.svg';
 import { Error } from '@/components/Error';
 import { Info } from '@/components/Info';
 import './input.css';
+// Создание объекта для приведения числовых значений вида 1000 к 1,000
 const formatter = new Intl.NumberFormat('en-EN');
 import ContentWithBreaks from '@/utils/ContentWithBreaks';
 
@@ -24,7 +25,7 @@ interface InputProps {
 }
 
 const Input = ({
-  label,
+  label, // подпись поля ввода
   value,
   onChange: setValue,
   onError: setError,
@@ -39,6 +40,7 @@ const Input = ({
   maxDescription,
   icon: Icon,
 }: InputProps) => {
+  // Функция для проверки и установки значения ввода в допустимом диапазоне
   const validateAndSetInputValue = (numberValue: number) => {
     if (numberValue >= min && numberValue <= max) {
       setError('');
@@ -52,12 +54,14 @@ const Input = ({
     }
   };
 
+  // Обработчик изменения значения поля ввода
   const handleInputChangeField = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawValue = e.target.value.replace(/[^0-9]/g, '');
     const numberValue = Number(rawValue);
     validateAndSetInputValue(numberValue);
   };
 
+  // Обработчик изменения значения ползунка
   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
     validateAndSetInputValue(value);
@@ -65,6 +69,7 @@ const Input = ({
 
   return (
     <div className="frame__item">
+      {/* Подпись */}
       <label className="label" htmlFor="initial-pay">
         {label}
         {tooltipText && (
@@ -76,6 +81,8 @@ const Input = ({
           </div>
         )}
       </label>
+
+      {/* Поле ввода */}
       <div
         className={`control-container ${
           errorText ? 'control-container_error' : ''
@@ -91,6 +98,8 @@ const Input = ({
         />
         {Icon && <Icon className="icon input-icon" />}
       </div>
+
+      {/* Опциональный ползунок */}
       {withSlider && (
         <input
           className="input-slider"
@@ -101,13 +110,18 @@ const Input = ({
           onChange={handleSliderChange}
         />
       )}
+
+      {/* Опциональное описание минимального и максимального значений */}
       {(minDescription || maxDescription) && (
         <div className="min-max-description">
           <span>{minDescription}</span>
           <span>{maxDescription}</span>
         </div>
       )}
+
+      {/* Опциональная справочная информация */}
       {infoText && <Info text={infoText} />}
+
       {errorText && <Error text={errorText} />}
     </div>
   );
