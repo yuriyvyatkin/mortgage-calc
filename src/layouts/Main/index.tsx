@@ -11,14 +11,20 @@ import ReactDOM from 'react-dom';
 import './main.css';
 
 interface MainProps {
-  footerRef: React.RefObject<HTMLDivElement>,
+  footerRef: React.RefObject<HTMLDivElement>;
   location: string[];
   delay: string[];
   property: string[];
   ownership: string[];
 }
 
-const Main = ({ footerRef, location, delay, property, ownership }: MainProps) => {
+const Main = ({
+  footerRef,
+  location,
+  delay,
+  property,
+  ownership,
+}: MainProps) => {
   const [values, setValues] = useState({
     estateCost: 1000000,
     location: 'Выберите город',
@@ -56,10 +62,12 @@ const Main = ({ footerRef, location, delay, property, ownership }: MainProps) =>
   const contBtnIsDurtyRef = useRef(false);
   // Хук, определяющий мобильные устройства, для выборочного рендеринга некоторых элементов на этих устройствах
   const isMobileDevice = useMediaQuery('(max-width: 873px)');
+  // Состояние для хранения последнего валидного значения стоимости недвижимости, чтобы предотвратить побочные вычисления в случае ошибки
+  const [validEstateCost, setValidEstateCost] = useState(values.estateCost);
 
   // хуки useEffect и useDebounce, обновляющие соответствующие значения у зависимых полей при вводе новых значений в каком-либо поле ввода
   useEffect(() => {
-    if (errors.estateCost || errors.initialPay || errors.timeframe) {
+    if (errors.estateCost || errors.initialPay || errors.timeframe || errors.monthlyPayment) {
       return;
     }
 
@@ -88,7 +96,7 @@ const Main = ({ footerRef, location, delay, property, ownership }: MainProps) =>
   // useDebounce используется для обеспечения корректности вычислений значений полей "Ежемесячный платёж" и "Срок"
   useDebounce(
     () => {
-      if (errors.monthlyPayment || errors.estateCost || errors.initialPay) {
+      if (errors.estateCost || errors.initialPay || errors.timeframe || errors.monthlyPayment) {
         return;
       }
 
@@ -112,7 +120,19 @@ const Main = ({ footerRef, location, delay, property, ownership }: MainProps) =>
   // обработчик новых значений полей ввода
   const handleValueChange = (field: string, value: number) => {
     if (field === 'estateCost') {
-      const newInitialPay = value * 0.5;
+      let newInitialPay = values.initialPay;
+
+      if (value >= 100000 && value <= 10000000) {
+        setValidEstateCost(value);
+        newInitialPay = value * 0.5;
+        setErrors({
+          ...errors,
+          estateCost: '',
+          initialPay: '',
+          timeframe: '',
+          monthlyPayment: '',
+        });
+      }
 
       setValues({
         ...values,
@@ -121,7 +141,7 @@ const Main = ({ footerRef, location, delay, property, ownership }: MainProps) =>
         monthlyPayment: {
           ...values.monthlyPayment,
           current: calculateCurrentMonthlyPayment(
-            value,
+            validEstateCost,
             newInitialPay,
             values.timeframe.current,
           ),
@@ -239,12 +259,12 @@ const Main = ({ footerRef, location, delay, property, ownership }: MainProps) =>
 
   const continueButton = (
     <button
-        ref={contBtnRef}
-        onClick={handleContinue}
-        className="continue-button"
-      >
-        Продолжить
-      </button>
+      ref={contBtnRef}
+      onClick={handleContinue}
+      className="continue-button"
+    >
+      Продолжить
+    </button>
   );
 
   return (
@@ -255,11 +275,11 @@ const Main = ({ footerRef, location, delay, property, ownership }: MainProps) =>
         <Input
           label="Стоимость недвижимости"
           value={values.estateCost}
-          min={0}
+          min={100000}
           max={10000000}
           onChange={(value: number) => handleValueChange('estateCost', value)}
           onError={(error: string) => handleError('estateCost', error)}
-          rangeErrorText="Стоимость недвижимости не может превышать 10,000,000"
+          rangeErrorText="Стоимость недвижимости не может меньше 100,000 и превышать 10,000,000"
           errorText={errors.estateCost}
           icon={CurrencyIcon}
         />
@@ -283,8 +303,8 @@ const Main = ({ footerRef, location, delay, property, ownership }: MainProps) =>
           label="Первоначальный взнос"
           value={values.initialPay}
           withSlider={true}
-          min={values.estateCost * 0.25}
-          max={values.estateCost}
+          min={validEstateCost * 0.25}
+          max={validEstateCost}
           onChange={(value: number) => handleValueChange('initialPay', value)}
           onError={(error: string) => handleError('initialPay', error)}
           rangeErrorText="Сумма первоначального взноса не может быть меньше 25% и больше 100% от стоимости недвижимости"
@@ -352,7 +372,8 @@ const Main = ({ footerRef, location, delay, property, ownership }: MainProps) =>
         />
       </div>
 
-      {footerRef.current && ReactDOM.createPortal(continueButton, footerRef.current)}
+      {footerRef.current &&
+        ReactDOM.createPortal(continueButton, footerRef.current)}
     </main>
   );
 };
