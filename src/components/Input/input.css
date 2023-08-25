@@ -65,6 +65,7 @@
 }
 
 /* Далее стили для input range */
+/* Заимствовано от сюда: https://codepen.io/ShadowShahriar/pen/zYPPYrQ */
 input[type='range'] {
   bottom: 17px;
 }
