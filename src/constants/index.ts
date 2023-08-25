@@ -1,13 +1,13 @@
-const cities = ['Тель-авив', 'Акко', 'Ариэль', 'Париж'];
+const location = ['Тель-авив', 'Акко', 'Ариэль', 'Париж'];
 
-const periods = [
+const delay = [
   'В ближайший месяц',
   'В ближайшие 2 месяца',
   'В ближайшие 3 месяца',
   'В ближайшие 6 месяцев',
 ];
 
-const propertyTypes = [
+const property = [
   'Квартира от застройщика',
   'Квартира на вторичном рынке',
   'Частный дом',
@@ -21,4 +21,4 @@ const ownership = [
   'Я собираюсь продать единственную недвижимость в ближайшие два года, чтобы использовать полученный капитал для приобретения новой',
 ]
 
-export default { cities, periods, propertyTypes, ownership };
+export default { location, delay, property, ownership };

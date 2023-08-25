@@ -5,7 +5,9 @@ const calculateCurrentMonthlyPayment = (
 ) => {
   const loanAmount = estateCost - initialPay;
   const numberOfMonths = numberOfYears * 12;
-  const monthlyPayment = loanAmount / numberOfMonths;
+  const monthlyPayment = numberOfMonths
+    ? loanAmount / numberOfMonths
+    : loanAmount;
 
   return Math.ceil(monthlyPayment);
 };

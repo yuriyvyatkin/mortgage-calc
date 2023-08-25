@@ -1,9 +1,9 @@
 import SelectIcon from '@/assets/svg/caret-down.svg';
 import CheckIcon from '@/assets/svg/check.svg';
 import MagnifierIcon from '@/assets/svg/magnifier.svg';
-import { Error } from "@/components/Error";
+import { Error } from '@/components/Error';
 import useScroll from '@/hooks/useScroll';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import './dropdown.css';
 
 interface DropdownProps {
@@ -39,7 +39,11 @@ const Dropdown = ({
   };
 
   const handleClickOutside = (event: MouseEvent) => {
-    if (containerRef.current && event.target instanceof Node && !containerRef.current.contains(event.target)) {
+    if (
+      containerRef.current &&
+      event.target instanceof Node &&
+      !containerRef.current.contains(event.target)
+    ) {
       setIsOpen(false);
     }
   };
@@ -53,7 +57,7 @@ const Dropdown = ({
 
   return (
     <div className="frame__item" ref={containerRef}>
-      <label>{label}</label>
+      <label className="label">{label}</label>
 
       <div
         className={`select-container control-container ${
@@ -63,6 +67,13 @@ const Dropdown = ({
           setQuery('');
           setIsOpen(!isOpen);
         }}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            setQuery('');
+            setIsOpen(!isOpen);
+          }
+        }}
+        tabIndex={0}
       >
         <div
           className={`control ${
@@ -77,7 +88,7 @@ const Dropdown = ({
       </div>
 
       {isOpen && (
-        <div className={`dropdown`} ref={dropdownRef}>
+        <div className="dropdown" ref={dropdownRef}>
           {withSearchInput && (
             <div className="search-bar-wrapper" key="search">
               <MagnifierIcon className="search-bar-icon" />
@@ -107,7 +118,18 @@ const Dropdown = ({
                   setIsOpen(false);
                 }}
               >
-                <span>{value}</span>
+                <span
+                  className="dropdown__item__text"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      setValue(value);
+                      setIsOpen(false);
+                    }
+                  }}
+                  tabIndex={0}
+                >
+                  {value}
+                </span>
                 {value === selectedValue && <CheckIcon />}
               </div>
             );

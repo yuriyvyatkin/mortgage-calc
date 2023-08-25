@@ -8,7 +8,20 @@
 }
 
 .select-container {
+  border-radius: 4px;
+
   cursor: pointer;
+}
+
+.select-container:focus,
+.dropdown:focus,
+.search-bar-wrapper:focus-within,
+.dropdown__item__text:focus {
+  outline: 1px solid var(--accent-primary);
+}
+
+.control-container_error.select-container:focus {
+  outline: none;
 }
 
 .dropdown {
@@ -92,4 +105,10 @@
   justify-content: space-between;
 
   padding: 10px 4px;
+}
+
+.dropdown__item__text {
+  flex-shrink: 999;
+
+  border-radius: 4px;
 }

@@ -1,26 +1,30 @@
 import Dropdown from '@/components/Dropdown';
 import Input from '@/components/Input';
 import useDebounce from '@/hooks/useDebounce';
+import useMediaQuery from '@/hooks/useMediaQuery';
 import calculateMonthlyPayments from '@/utils/calculateMonthlyPayments';
 import calculateCurrentMonthlyPayment from '@/utils/calculateCurrentMonthlyPayment';
 import calculateCurrentTimeFrame from '@/utils/calculateCurrentTimeFrame';
+import CurrencyIcon from '@/assets/svg/currency.svg';
 import React, { useEffect, useState, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import './main.css';
 
 interface MainProps {
-  cities: string[];
-  periods: string[];
-  propertyTypes: string[];
+  footerRef: React.RefObject<HTMLDivElement>,
+  location: string[];
+  delay: string[];
+  property: string[];
   ownership: string[];
 }
 
-const Main = ({ cities, periods, propertyTypes, ownership }: MainProps) => {
+const Main = ({ footerRef, location, delay, property, ownership }: MainProps) => {
   const [values, setValues] = useState({
     estateCost: 1000000,
-    city: 'Выберите город',
-    period: 'Выберите период',
+    location: 'Выберите город',
+    delay: 'Выберите период',
     initialPay: 0,
-    propertyType: 'Выберите тип недвижимости',
+    property: 'Выберите тип недвижимости',
     ownership: 'Выберите ответ',
     timeframe: {
       current: 30,
@@ -35,35 +39,19 @@ const Main = ({ cities, periods, propertyTypes, ownership }: MainProps) => {
   });
   const [errors, setErrors] = useState({
     estateCost: '',
-    cities: '',
-    periods: '',
+    location: '',
+    delay: '',
     initialPay: '',
-    propertyTypes: '',
+    property: '',
     ownership: '',
     timeframe: '',
     monthlyPayment: '',
   });
-  const [isMobileDevice, setIsMobileDevice] = useState(false);
   const [isInitialPayChanged, setIsInitialPayChanged] = useState(false);
   const initialPayRef = useRef<number>(values.estateCost * 0.5);
-  const continueButtonRef = useRef<HTMLButtonElement | null>(null);
-  const continueButtonDurty = useRef(false);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(max-width: 791px)');
-
-    setIsMobileDevice(mediaQuery.matches);
-
-    const handleMediaQueryChange = (event: MediaQueryListEvent) => {
-      setIsMobileDevice(event.matches);
-    };
-
-    mediaQuery.addEventListener('change', handleMediaQueryChange);
-
-    return () => {
-      mediaQuery.removeEventListener('change', handleMediaQueryChange);
-    };
-  }, []);
+  const contBtnRef = useRef<HTMLButtonElement | null>(null);
+  const contBtnIsDurtyRef = useRef(false);
+  const isMobileDevice = useMediaQuery('(max-width: 873px)');
 
   useEffect(() => {
     if (errors.estateCost || errors.initialPay || errors.timeframe) {
@@ -79,13 +67,7 @@ const Main = ({ cities, periods, propertyTypes, ownership }: MainProps) => {
       newInitialPay = estateCost * 0.5;
     }
 
-    const newMonthlyPayment = calculateCurrentMonthlyPayment(
-      estateCost,
-      initialPay,
-      timeframe.current,
-    );
-
-    const { min, max } = calculateMonthlyPayments(
+    const { current, min, max } = calculateMonthlyPayments(
       estateCost,
       initialPay,
       timeframe,
@@ -93,7 +75,7 @@ const Main = ({ cities, periods, propertyTypes, ownership }: MainProps) => {
 
     setValues({
       ...values,
-      monthlyPayment: { current: newMonthlyPayment, min, max },
+      monthlyPayment: { current, min, max },
       initialPay: newInitialPay,
     });
   }, [values.estateCost, values.initialPay, values.timeframe]);
@@ -106,7 +88,7 @@ const Main = ({ cities, periods, propertyTypes, ownership }: MainProps) => {
 
       const { monthlyPayment, estateCost, initialPay } = values;
 
-      const newTimeFrameCurrent = calculateCurrentTimeFrame(
+      const newCurrentTimeFrame = calculateCurrentTimeFrame(
         estateCost,
         initialPay,
         monthlyPayment.current,
@@ -114,7 +96,7 @@ const Main = ({ cities, periods, propertyTypes, ownership }: MainProps) => {
 
       setValues({
         ...values,
-        timeframe: { ...values.timeframe, current: newTimeFrameCurrent },
+        timeframe: { ...values.timeframe, current: newCurrentTimeFrame },
       });
     },
     500,
@@ -124,6 +106,7 @@ const Main = ({ cities, periods, propertyTypes, ownership }: MainProps) => {
   const handleValueChange = (field: string, value: number) => {
     if (field === 'estateCost') {
       const newInitialPay = value * 0.5;
+
       setValues({
         ...values,
         estateCost: value,
@@ -157,66 +140,46 @@ const Main = ({ cities, periods, propertyTypes, ownership }: MainProps) => {
     }
   };
 
+  const handleItemChange = (valueKey: string, value: string) => {
+    setValues({ ...values, [valueKey]: value });
+
+    if (errors.hasOwnProperty(valueKey)) {
+      setErrors({ ...errors, [valueKey]: '' });
+    }
+  };
+
   const handleError = (field: string, error: string) => {
     setErrors({ ...errors, [field]: error });
   };
 
-  const handleItemChange = (valueKey: string, value: string) => {
-    setValues({ ...values, [valueKey]: value });
-
-    const errorKeys: { [key: string]: keyof typeof errors } = {
-      city: 'cities',
-      period: 'periods',
-      propertyType: 'propertyTypes',
-      ownership: 'ownership',
-    };
-
-    const errorKey = errorKeys[valueKey];
-    if (errorKey) {
-      setErrors({ ...errors, [errorKey]: '' });
-    }
-  };
-
   const handleContinue = () => {
-    if (continueButtonDurty.current && continueButtonRef.current && continueButtonRef.current.classList.contains('continue-button_disabled')) {
+    if (
+      contBtnIsDurtyRef.current &&
+      contBtnRef.current &&
+      contBtnRef.current.classList.contains('continue-button_disabled')
+    ) {
       return;
     }
 
-    continueButtonDurty.current = true;
-
+    const newErrors = { ...errors };
     let isValid = true;
 
-    const errorKeys: { [key: string]: keyof typeof errors } = {
-      estateCost: 'estateCost',
-      city: 'cities',
-      period: 'periods',
-      initialPay: 'initialPay',
-      propertyType: 'propertyTypes',
-      ownership: 'ownership',
-      timeframe: 'timeframe',
-      monthlyPayment: 'monthlyPayment',
-    };
+    contBtnIsDurtyRef.current = true;
 
-    const newErrors = { ...errors };
+    Object.keys(values).forEach((key) => {
+      const valueKey = key as keyof typeof values;
 
-    type ValueType = typeof values;
-
-    Object.keys(values).forEach((key: string) => {
-      if (isMobileDevice && key === 'city') {
+      if (isMobileDevice && valueKey === 'location') {
         return;
       }
 
-      const valueKey = key as keyof ValueType;
       const value = values[valueKey];
-      const errorKey = errorKeys[valueKey];
 
-      if (typeof value === 'string' && value.includes('Выберите')) {
-        newErrors[errorKey] = 'Выберите ответ';
-        isValid = false;
-      }
-
-      if (typeof value === 'number' && value === 0) {
-        newErrors[errorKey] = 'Выберите ответ';
+      if (
+        (typeof value === 'string' && value.includes('Выберите')) ||
+        (typeof value === 'number' && value === 0)
+      ) {
+        newErrors[valueKey] = 'Выберите ответ';
         isValid = false;
       }
     });
@@ -225,8 +188,8 @@ const Main = ({ cities, periods, propertyTypes, ownership }: MainProps) => {
 
     if (isValid) {
       if (isMobileDevice) {
-        const { city, ...valuesWithoutCity } = values;
-        localStorage.setItem('values', JSON.stringify(valuesWithoutCity));
+        const { location, ...otherValues } = values;
+        localStorage.setItem('values', JSON.stringify(otherValues));
       } else {
         localStorage.setItem('values', JSON.stringify(values));
       }
@@ -234,13 +197,17 @@ const Main = ({ cities, periods, propertyTypes, ownership }: MainProps) => {
   };
 
   const toggleButtonDisabledClass = () => {
-    if (continueButtonRef.current) {
-      let hasErrors: boolean = Object.values(errors).some(Boolean) || Object.values(values).some((item) => typeof item === 'string' && item.includes('Выберите'));
+    if (contBtnRef.current) {
+      let hasErrors: boolean =
+        Object.values(errors).some(Boolean) ||
+        Object.values(values).some(
+          (item) => typeof item === 'string' && item.includes('Выберите'),
+        );
 
       if (hasErrors) {
-        continueButtonRef.current.classList.add('continue-button_disabled');
+        contBtnRef.current.classList.add('continue-button_disabled');
       } else {
-        continueButtonRef.current.classList.remove('continue-button_disabled');
+        contBtnRef.current.classList.remove('continue-button_disabled');
       }
     }
   };
@@ -248,6 +215,26 @@ const Main = ({ cities, periods, propertyTypes, ownership }: MainProps) => {
   useEffect(() => {
     toggleButtonDisabledClass();
   }, [errors, values]);
+
+  const DelayComponent = (
+    <Dropdown
+      label="Когда вы планируете оформить ипотеку?"
+      values={delay}
+      selectedValue={values.delay}
+      errorText={errors.delay}
+      onSelect={(value) => handleItemChange('delay', value)}
+    />
+  );
+
+  const continueButton = (
+    <button
+        ref={contBtnRef}
+        onClick={handleContinue}
+        className="continue-button"
+      >
+        Продолжить
+      </button>
+  );
 
   return (
     <main className="main">
@@ -263,28 +250,21 @@ const Main = ({ cities, periods, propertyTypes, ownership }: MainProps) => {
           onError={(error: string) => handleError('estateCost', error)}
           rangeErrorText="Стоимость недвижимости не может превышать 10,000,000"
           errorText={errors.estateCost}
+          icon={CurrencyIcon}
         />
 
         {!isMobileDevice && (
           <Dropdown
             label="Город покупки недвижимости"
-            values={cities}
-            selectedValue={values.city}
+            values={location}
+            selectedValue={values.location}
             withSearchInput={true}
-            errorText={errors.cities}
-            onSelect={(value) => handleItemChange('city', value)}
+            errorText={errors.location}
+            onSelect={(value) => handleItemChange('location', value)}
           />
         )}
 
-        {!isMobileDevice && (
-          <Dropdown
-            label="Когда вы планируете оформить ипотеку?"
-            values={periods}
-            selectedValue={values.period}
-            errorText={errors.periods}
-            onSelect={(value) => handleItemChange('period', value)}
-          />
-        )}
+        {!isMobileDevice && DelayComponent}
       </div>
 
       <div className="frame">
@@ -299,26 +279,23 @@ const Main = ({ cities, periods, propertyTypes, ownership }: MainProps) => {
           rangeErrorText="Сумма первоначального взноса не может быть меньше 25% и больше 100% от стоимости недвижимости"
           errorText={errors.initialPay}
           infoText="Сумма финансирования: 100,000 ₪\nПроцент финансирования: 25%"
-          tooltipText="Основная квартира: у заемщика нет квартиры ставка финансирования\nМаксимум до 75%\n\nАльтернативная квартира: Для заемщика квартира, которую он обязуется продать в течение двух лет ставка финансирования\nМаксимум до 70%\n\nВторая квартира или выше: у заемщика уже есть ставка финансирования квартиры\nМаксимум до 50%"
+          tooltipText={
+            !isMobileDevice
+              ? 'Основная квартира: у заемщика нет квартиры ставка финансирования\nМаксимум до 75%\n\nАльтернативная квартира: Для заемщика квартира, которую он обязуется продать в течение двух лет ставка финансирования\nМаксимум до 70%\n\nВторая квартира или выше: у заемщика уже есть ставка финансирования квартиры\nМаксимум до 50%'
+              : ''
+          }
+          icon={CurrencyIcon}
         />
 
         <Dropdown
           label="Тип недвижимости"
-          values={propertyTypes}
-          selectedValue={values.propertyType}
-          errorText={errors.propertyTypes}
-          onSelect={(value) => handleItemChange('propertyType', value)}
+          values={property}
+          selectedValue={values.property}
+          errorText={errors.property}
+          onSelect={(value) => handleItemChange('property', value)}
         />
 
-        {isMobileDevice && (
-          <Dropdown
-            label="Когда вы планируете оформить ипотеку?"
-            values={periods}
-            selectedValue={values.period}
-            errorText={errors.periods}
-            onSelect={(value) => handleItemChange('period', value)}
-          />
-        )}
+        {isMobileDevice && DelayComponent}
 
         <Dropdown
           label="Вы уже владеете недвижимостью?"
@@ -329,7 +306,7 @@ const Main = ({ cities, periods, propertyTypes, ownership }: MainProps) => {
         />
       </div>
 
-      <hr className="custom-line" />
+      <hr className="line" />
 
       <div className="frame">
         <Input
@@ -360,18 +337,11 @@ const Main = ({ cities, periods, propertyTypes, ownership }: MainProps) => {
           onError={(error: string) => handleError('monthlyPayment', error)}
           rangeErrorText={`Размер ежемесячного платежа не может быть меньше ${values.monthlyPayment.min} иначе срок будет больше ${values.timeframe.max} лет`}
           errorText={errors.monthlyPayment}
+          icon={CurrencyIcon}
         />
       </div>
 
-      <hr className="wide-custom-line" />
-
-      <button
-        ref={continueButtonRef}
-        onClick={handleContinue}
-        className="continue-button"
-      >
-        Продолжить
-      </button>
+      {footerRef.current && ReactDOM.createPortal(continueButton, footerRef.current)}
     </main>
   );
 };

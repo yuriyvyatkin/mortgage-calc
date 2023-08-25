@@ -1,5 +1,4 @@
 import React from 'react';
-import CurrencyIcon from '@/assets/svg/currency.svg';
 import TooltipIcon from '@/assets/svg/info.svg';
 import { Error } from '@/components/Error';
 import { Info } from '@/components/Info';
@@ -21,6 +20,7 @@ interface InputProps {
   minDescription?: string;
   max: number;
   maxDescription?: string;
+  icon?: React.ComponentType<{ className?: string }>;
 }
 
 const Input = ({
@@ -37,6 +37,7 @@ const Input = ({
   minDescription,
   max,
   maxDescription,
+  icon: Icon,
 }: InputProps) => {
   const validateAndSetInputValue = (numberValue: number) => {
     if (numberValue >= min && numberValue <= max) {
@@ -88,7 +89,7 @@ const Input = ({
           onChange={handleInputChangeField}
           required
         />
-        <CurrencyIcon className="icon input-icon" />
+        {Icon && <Icon className="icon input-icon" />}
       </div>
       {withSlider && (
         <input

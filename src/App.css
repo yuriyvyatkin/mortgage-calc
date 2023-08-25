@@ -1,11 +1,11 @@
 .App {
   display: flex;
   flex-direction: column;
-  overflow-x: hidden;
 
   min-height: 100vh;
 
   font-family: 'Roboto', sans-serif;
+  line-height: 1.4;
 
   color: var(--text-primary);
   background-color: var(--black);
@@ -20,7 +20,7 @@
 .frame__item {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 
   width: 325px;
 }
@@ -36,6 +36,8 @@
 }
 
 .control {
+  overflow: hidden;
+
   min-width: 100%;
   padding: 12px 24px;
   padding-right: 48px;
@@ -43,9 +45,20 @@
   border-radius: 6px;
 
   font-size: var(--20px);
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 
   color: var(--white);
   background: var(--base-inputs);
+}
+
+.control:focus {
+  outline: 1px solid var(--accent-primary);
+}
+
+.control-container_error .control:focus {
+  outline: none;
 }
 
 .control_default {
@@ -65,4 +78,43 @@
   border-radius: 4px;
 
   border-color: #e76143;
+}
+
+.wide-line {
+  width: 100%;
+  height: 1px;
+  margin-top: 40px;
+  border: none;
+
+  background-color: var(--base-stroke);
+}
+
+.footer {
+  display: flex;
+  justify-content: right;
+
+  width: 1130px;
+  margin-inline: auto;
+}
+
+@media (max-width: 1200px) {
+  .frame {
+    gap: 24px 66px;
+  }
+
+  .footer {
+    width: 100%;
+  }
+}
+
+@media (max-width: 873px) {
+  .frame {
+    gap: 32px;
+  }
+
+  .footer {
+    justify-content: center;
+
+    background: var(--base-secondary);
+  }
 }
