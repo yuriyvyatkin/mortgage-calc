@@ -76,7 +76,7 @@ const Input = ({
           <div className="tooltip-container">
             <TooltipIcon className="tooltip-icon" />
             <span className="tooltip-text">
-              <ContentWithBreaks content={tooltipText} separator="\n" />
+              <ContentWithBreaks content={tooltipText} separator="<br>" />
             </span>
           </div>
         )}
