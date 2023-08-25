@@ -11,7 +11,7 @@
 }
 
 .title {
-  font-size: var(--48px);
+  font-size: 48px;
   line-height: 1;
 }
 
@@ -20,7 +20,7 @@
   height: 1px;
   border: none;
 
-  background-color: var(--base-stroke);
+  background-color: var(--space-gray);
 }
 
 .continue-button {
@@ -31,16 +31,16 @@
   border-radius: 8px;
 
   color: var(--black);
-  background-color: var(--accent-primary);
+  background-color: var(--yellow);
 }
 
 .continue-button_disabled {
-  color: var(--text-disabled);
+  color: var(--gray);
   background-color: var(--dark-gray);
 }
 
 .continue-button:focus {
-  outline: 1px solid var(--accent-primary);
+  outline: 1px solid var(--yellow);
 }
 
 @media (max-width: 1200px) {
@@ -60,7 +60,7 @@
   }
 
   .title {
-    font-size: var(--31px);
+    font-size: 31px;
   }
 
   .continue-button {

@@ -14,12 +14,12 @@
   align-items: center;
   align-self: flex-start;
 
-  width: var(--16px);
-  height: var(--16px);
+  width: 16px;
+  height: 16px;
   margin-right: 4px;
 }
 
 .error__text {
-  font-size: var(--12px);
+  font-size: 12px;
   line-height: 140%;
 }

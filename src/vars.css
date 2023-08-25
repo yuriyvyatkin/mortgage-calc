@@ -1,30 +1,14 @@
 html {
-  /* цвета */
-  --accent-primary: #fbe54d;
-  --base-inputs: #2a2b31;
-  --base-secondary: #242529;
-  --base-stroke: #333535;
-  --text-disabled: #848484;
-  --text-primary: #fff;
-  --text-secondary: #d0d0d0;
-  --accent-yellow-disabled: #2d2d2d;
-  --black: #161616;
-  --white: #fff;
-  --dark-gray: #2d2d2d;
-  --gray: #848484;
+  /* палитра цветов */
+  --yellow: #fbe54d;
   --orange: #e76143;
-  --charcoal: #242529;
+  --white: #fff;
+  --gray: #848484;
   --slate-gray: #3f444d;
   --steel-gray: #41434e;
-
-  /* размеры в rem, которые позволяют использовать приложение людям с ограниченными возможностями при масштабировании экрана до 200% */
-  --10px: 0.625rem;
-  --12px: 0.75rem;
-  --14px: 0.875rem;
-  --16px: 1rem;
-  --18px: 1.125rem;
-  --20px: 1.25rem;
-  --24px: 1.5rem;
-  --31px: 1.9375rem;
-  --48px: 3rem;
+  --space-gray: #333535;
+  --dark-gray: #2d2d2d;
+  --charcoal-gray: #2a2b31;
+  --charcoal: #242529;
+  --black: #161616;
 }

@@ -7,7 +7,7 @@
   font-family: 'Roboto', sans-serif;
   line-height: 1.4;
 
-  color: var(--text-primary);
+  color: var(--white);
   background-color: var(--black);
 }
 
@@ -29,7 +29,7 @@
 /* Стили для элементов управления (поля ввода, выпадающие списки) */
 
 .label {
-  font-size: var(--16px);
+  font-size: 16px;
 }
 
 .control-container {
@@ -44,20 +44,20 @@
   min-width: 100%;
   padding: 12px 24px;
   padding-right: 48px;
-  border: 1px solid var(--base-stroke);
+  border: 1px solid var(--space-gray);
   border-radius: 6px;
 
-  font-size: var(--20px);
+  font-size: 20px;
   line-height: 1;
   text-overflow: ellipsis;
   white-space: nowrap;
 
   color: var(--white);
-  background: var(--base-inputs);
+  background: var(--charcoal-gray);
 }
 
 .control:focus {
-  outline: 1px solid var(--accent-primary);
+  outline: 1px solid var(--yellow);
 }
 
 .control-container_error .control:focus {
@@ -65,14 +65,14 @@
 }
 
 .control_default {
-  font-size: var(--16px);
+  font-size: 16px;
 
-  color: var(--text-disabled);
+  color: var(--gray);
 }
 
 .control-container .icon {
   position: absolute;
-  right: var(--24px);
+  right: 24px;
 
   pointer-events: none;
 }
@@ -91,7 +91,7 @@
   margin-top: 40px;
   border: none;
 
-  background-color: var(--base-stroke);
+  background-color: var(--space-gray);
 }
 
 .footer {
@@ -120,6 +120,6 @@
   .footer {
     justify-content: center;
 
-    background: var(--base-secondary);
+    background: var(--charcoal);
   }
 }

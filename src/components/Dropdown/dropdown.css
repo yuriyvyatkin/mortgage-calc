@@ -1,6 +1,6 @@
 .control-container .select-icon {
-  width: var(--24px);
-  height: var(--24px);
+  width: 24px;
+  height: 24px;
 }
 
 .control-container .select-icon_active {
@@ -17,7 +17,7 @@
 .dropdown:focus,
 .search-bar-wrapper:focus-within,
 .dropdown__item__text:focus {
-  outline: 1px solid var(--accent-primary);
+  outline: 1px solid var(--yellow);
 }
 
 .control-container_error.select-container:focus {
@@ -34,12 +34,12 @@
 
   max-height: 193px;
   padding: 8px 12px;
-  border: 1px solid var(--base-stroke);
+  border: 1px solid var(--space-gray);
   border-radius: 8px;
 
-  font-size: var(--14px);
+  font-size: 14px;
 
-  background: var(--base-secondary);
+  background: var(--charcoal);
   box-shadow: 0 8px 32px 0 rgba(var(--white), .16);
 
   cursor: pointer;
@@ -85,8 +85,8 @@
   position: absolute;
   left: 16px;
 
-  width: var(--20px);
-  height: var(--20px);
+  width: 20px;
+  height: 20px;
 }
 
 .search-bar {
