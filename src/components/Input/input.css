@@ -234,3 +234,9 @@ input[type='range']:active::-moz-range-progress {
 input[type='range']:disabled::-moz-range-thumb {
   cursor: not-allowed;
 }
+
+@media (pointer: none), (pointer: coarse) {
+  .tooltip-icon {
+    display: none;
+  }
+}
